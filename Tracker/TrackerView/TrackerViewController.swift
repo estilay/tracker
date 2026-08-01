@@ -2,10 +2,14 @@ import UIKit
 
 // MARK: - TrackerViewController
 final class TrackerViewController: UIViewController {
+    // MARK: - Properties
+    private var categories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
     // MARK: - UI Elements
     private lazy var stubImageView: UIImageView = {
         let stubImage = UIImage(resource: .dizzy)
         let stubImageView = UIImageView(image: stubImage)
+        
         stubImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stubImageView)
         
@@ -29,6 +33,7 @@ final class TrackerViewController: UIViewController {
         stubContainerView.axis = .vertical
         stubContainerView.spacing = 8
         stubContainerView.alignment = .center
+        
         stubContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stubContainerView)
         
@@ -39,7 +44,6 @@ final class TrackerViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
         setupUI()
     }
