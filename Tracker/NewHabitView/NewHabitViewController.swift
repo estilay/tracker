@@ -97,7 +97,7 @@ final class NewHabitViewController: UIViewController {
     }
     
     private func updateCreateButtonState() {
-        let isEnabled = !habitName.isEmpty && !selectedDays.isEmpty
+        let isEnabled = !habitName.isEmpty && !selectedSchedule.isEmpty
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? .yBlackDay : .yGray
     }
@@ -278,6 +278,7 @@ extension NewHabitViewController: UITableViewDelegate {
             }
             
             self?.updateScheduleCell()
+            self?.updateCreateButtonState()
         }
         
         let navController = UINavigationController(rootViewController: scheduleVC)
