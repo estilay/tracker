@@ -85,13 +85,14 @@ final class TrackerViewCell: UICollectionViewCell {
         setupUI()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     // MARK: - Actions
     @objc private func actionButtonTapped() {
-        guard let trackerId = trackerId else { return }
+        guard let trackerId else { return }
         
         dayCount += 1
         

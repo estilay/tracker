@@ -23,14 +23,14 @@ enum Schedule: String, CaseIterable {
     
     static func from(weekday: Int) -> Schedule {
         switch weekday {
-        case 1: return .sunday
-        case 2: return .monday
-        case 3: return .tuesday
-        case 4: return .wednesday
-        case 5: return .thursday
-        case 6: return .friday
-        case 7: return .saturday
-        default: return .monday
+        case 1: .sunday
+        case 2: .monday
+        case 3: .tuesday
+        case 4: .wednesday
+        case 5: .thursday
+        case 6: .friday
+        case 7: .saturday
+        default: .monday
         }
     }
 }
