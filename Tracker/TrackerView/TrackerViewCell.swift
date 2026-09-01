@@ -10,6 +10,7 @@ final class TrackerViewCell: UICollectionViewCell {
     
     // MARK: - Properties
     private var trackerId: UUID?
+    private var trackerColor: UIColor?
     private var dayCount: Int = 0 {
         didSet {
             valueLabel.text = "\(dayCount) день"
@@ -72,7 +73,7 @@ final class TrackerViewCell: UICollectionViewCell {
         let button = UIButton()
         let image = UIImage(resource: .property1Plus).withRenderingMode(.alwaysTemplate)
         button.setImage(image, for: .normal)
-        button.tintColor = .colorSelection5
+        button.tintColor = cardView.backgroundColor
         button.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         
@@ -96,7 +97,7 @@ final class TrackerViewCell: UICollectionViewCell {
         
         dayCount += 1
         
-        let doneImage = UIImage(resource: .property1Done).withTintColor(.colorSelection5)
+        let doneImage = UIImage(resource: .property1Done).withTintColor(trackerColor ?? .colorSelection5)
         actionButton.setImage(doneImage, for: .normal)
         actionButton.isEnabled = false
         
@@ -106,6 +107,7 @@ final class TrackerViewCell: UICollectionViewCell {
     // MARK: - Configuration
     func configure(with tracker: Tracker, completedDays: Int, isCompletedToday: Bool, selectedDate: Date) {
         trackerId = tracker.id
+        trackerColor = tracker.color
         titleLabel.text = tracker.name
         emojiView.text = tracker.icon
         cardView.backgroundColor = tracker.color
@@ -118,7 +120,7 @@ final class TrackerViewCell: UICollectionViewCell {
             actionButton.isHidden = true
             actionButton.isEnabled = false
         } else if isCompletedToday {
-            let doneImage = UIImage(resource: .property1Done).withTintColor(.colorSelection5)
+            let doneImage = UIImage(resource: .property1Done).withTintColor(tracker.color)
             actionButton.setImage(doneImage, for: .normal)
             actionButton.isEnabled = false
             actionButton.isHidden = false

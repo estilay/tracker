@@ -6,8 +6,8 @@ final class NewHabitViewController: UIViewController {
     private let selectedCategory: String = "Важное"
     private var selectedSchedule = String()
     private var selectedDays: [Schedule] = []
-    private var selectedIcon: String = "😄"
-    private var selectedColor: UIColor = .colorSelection5
+    private var selectedIcon: String?
+    private var selectedColor: UIColor?
     private var isCharacterLimitExceeded = false
     
     var onTrackerCreated: ((Tracker, String) -> Void)?
@@ -20,8 +20,11 @@ final class NewHabitViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.register(HabitDetailCell.self, forCellReuseIdentifier: HabitDetailCell.identifier)
         tableView.register(HabitNameCell.self, forCellReuseIdentifier: HabitNameCell.identifier)
-        tableView.rowHeight = 75
+        tableView.register(EmojiCollectionCell.self, forCellReuseIdentifier: EmojiCollectionCell.identifier)
+        tableView.register(ColorCollectionCell.self, forCellReuseIdentifier: ColorCollectionCell.identifier)
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 75
+        tableView.separatorStyle = .singleLine
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -73,8 +76,8 @@ final class NewHabitViewController: UIViewController {
         
         let tracker = Tracker(
             name: habitName,
-            icon: selectedIcon,
-            color: selectedColor,
+            icon: selectedIcon ?? "😄",
+            color: selectedColor ?? .colorSelection5,
             schedule: selectedDays
         )
         
@@ -129,7 +132,7 @@ extension NewHabitViewController {
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: cancelButton.topAnchor, constant: -16),
             
             cancelButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
@@ -147,7 +150,7 @@ extension NewHabitViewController {
 // MARK: - UITableViewDataSource
 extension NewHabitViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        2
+        4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -156,6 +159,10 @@ extension NewHabitViewController: UITableViewDataSource {
             return 1
         case 1:
             return 2
+        case 2:
+            return 1
+        case 3:
+            return 1
         default:
             return 0
         }
@@ -173,6 +180,7 @@ extension NewHabitViewController: UITableViewDataSource {
             
             cell.textField.text = habitName
             cell.delegate = self
+            cell.selectionStyle = .none
             
             return cell
             
@@ -196,6 +204,38 @@ extension NewHabitViewController: UITableViewDataSource {
             
             return cell
             
+        case 2:
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: EmojiCollectionCell.identifier,
+                for: indexPath
+            ) as? EmojiCollectionCell else {
+                return UITableViewCell()
+            }
+            
+            cell.onEmojiSelected = { [weak self] emoji in
+                self?.selectedIcon = emoji
+                self?.updateCreateButtonState()
+            }
+            cell.selectionStyle = .none
+            
+            return cell
+            
+        case 3:
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: ColorCollectionCell.identifier,
+                for: indexPath
+            ) as? ColorCollectionCell else {
+                return UITableViewCell()
+            }
+            
+            cell.onColorSelected = { [weak self] color in
+                self?.selectedColor = color
+                self?.updateCreateButtonState()
+            }
+            cell.selectionStyle = .none
+            
+            return cell
+            
         default:
             return UITableViewCell()
         }
@@ -205,7 +245,25 @@ extension NewHabitViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension NewHabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        enum Constants {
+            static let defaultRowHeight: CGFloat = 75
+            static let collectionItemHeight: CGFloat = 52
+            static let collectionTopAndBottomInset: CGFloat = 24
+            static let collectionHorizontalInset: CGFloat = 19
+            
+            static var collectionSectionHeight: CGFloat {
+                return collectionItemHeight * 3 + collectionTopAndBottomInset * 2 + collectionHorizontalInset
+            }
+        }
+        
+        switch indexPath.section {
+        case 0, 1:
+            return Constants.defaultRowHeight
+        case 2, 3:
+            return Constants.collectionSectionHeight
+        default:
+            return Constants.defaultRowHeight
+        }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -225,6 +283,28 @@ extension NewHabitViewController: UITableViewDelegate {
                 break
             }
         }
+    }
+    
+    // MARK: - Header
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case 0:
+            return 0
+        case 1:
+            return 24
+        case 2:
+            return 32
+        case 3:
+            return 16
+        default:
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .clear
+        return headerView
     }
     
     // MARK: - Footer
