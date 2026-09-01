@@ -6,11 +6,18 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
     func storeDidChange(_ store: TrackerCategoryStore)
 }
 
+// MARK: - Errors
+enum TrackerCategoryStoreError: Error {
+    case categoryNotFound
+    case saveFailed
+    case fetchFailed
+}
+
 // MARK: - TrackerCategoryStore
 final class TrackerCategoryStore: NSObject {
     // MARK: - Properties
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>?
     private var cachedCategories: [TrackerCategory] = []
     
     weak var delegate: TrackerCategoryStoreDelegate?
@@ -18,13 +25,17 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - Initialization
     override convenience init() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
-        try! self.init(context: context)
+        self.init(context: context)
     }
     
-    init(context: NSManagedObjectContext) throws {
+    init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
-        
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Setup
+    private func setupFetchedResultsController() {
         let fetchRequest = TrackerCategoryCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(keyPath: \TrackerCategoryCoreData.title, ascending: true)
@@ -38,8 +49,13 @@ final class TrackerCategoryStore: NSObject {
         )
         controller.delegate = self
         self.fetchedResultsController = controller
-        try controller.performFetch()
-        updateCache()
+        
+        do {
+            try controller.performFetch()
+            updateCache()
+        } catch {
+            print("Failed to perform fetch: \(error)")
+        }
     }
     
     // MARK: - Public Properties
@@ -48,11 +64,11 @@ final class TrackerCategoryStore: NSObject {
     }
     
     var numberOfItems: Int {
-        return fetchedResultsController.fetchedObjects?.count ?? 0
+        return fetchedResultsController?.fetchedObjects?.count ?? 0
     }
     
     func category(at indexPath: IndexPath) -> TrackerCategory? {
-        guard let coreData = fetchedResultsController.fetchedObjects?[indexPath.row] else {
+        guard let coreData = fetchedResultsController?.fetchedObjects?[indexPath.row] else {
             return nil
         }
         return convertToCategory(from: coreData)
@@ -110,7 +126,7 @@ final class TrackerCategoryStore: NSObject {
     }
     
     private func updateCache() {
-        cachedCategories = (fetchedResultsController.fetchedObjects ?? [])
+        cachedCategories = (fetchedResultsController?.fetchedObjects ?? [])
             .compactMap { convertToCategory(from: $0) }
     }
     

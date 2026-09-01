@@ -6,11 +6,18 @@ protocol TrackerRecordStoreDelegate: AnyObject {
     func storeDidChange(_ store: TrackerRecordStore)
 }
 
+// MARK: - Errors
+enum TrackerRecordStoreError: Error {
+    case recordNotFound
+    case saveFailed
+    case fetchFailed
+}
+
 // MARK: - TrackerRecordStore
 final class TrackerRecordStore: NSObject {
     // MARK: - Properties
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>?
     private var cachedRecords: [TrackerRecord] = []
     
     weak var delegate: TrackerRecordStoreDelegate?
@@ -18,13 +25,17 @@ final class TrackerRecordStore: NSObject {
     // MARK: - Initialization
     override convenience init() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
-        try! self.init(context: context)
+        self.init(context: context)
     }
     
-    init(context: NSManagedObjectContext) throws {
+    init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
-        
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Setup
+    private func setupFetchedResultsController() {
         let fetchRequest = TrackerRecordCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: false)
@@ -38,8 +49,13 @@ final class TrackerRecordStore: NSObject {
         )
         controller.delegate = self
         self.fetchedResultsController = controller
-        try controller.performFetch()
-        updateCache()
+        
+        do {
+            try controller.performFetch()
+            updateCache()
+        } catch {
+            print("Failed to perform fetch: \(error)")
+        }
     }
     
     // MARK: - Public Properties
@@ -48,11 +64,11 @@ final class TrackerRecordStore: NSObject {
     }
     
     var numberOfItems: Int {
-        return fetchedResultsController.fetchedObjects?.count ?? 0
+        return fetchedResultsController?.fetchedObjects?.count ?? 0
     }
     
     func record(at indexPath: IndexPath) -> TrackerRecord? {
-        guard let coreData = fetchedResultsController.fetchedObjects?[indexPath.row] else {
+        guard let coreData = fetchedResultsController?.fetchedObjects?[indexPath.row] else {
             return nil
         }
         return convertToRecord(from: coreData)
@@ -88,6 +104,7 @@ final class TrackerRecordStore: NSObject {
         try saveContext()
     }
     
+    // MARK: - Read Records
     func isRecordExists(trackerId: UUID, date: Date) throws -> Bool {
         let allRecords = try fetchAllCoreDataRecords()
         let calendar = Calendar.current
@@ -130,7 +147,7 @@ final class TrackerRecordStore: NSObject {
     }
     
     private func updateCache() {
-        cachedRecords = (fetchedResultsController.fetchedObjects ?? [])
+        cachedRecords = (fetchedResultsController?.fetchedObjects ?? [])
             .compactMap { convertToRecord(from: $0) }
     }
     

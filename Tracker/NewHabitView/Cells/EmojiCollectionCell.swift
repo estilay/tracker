@@ -32,8 +32,9 @@ final class EmojiCollectionCell: UITableViewCell {
         setupUI()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     private func setupUI() {

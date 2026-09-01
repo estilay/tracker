@@ -6,11 +6,20 @@ protocol TrackerStoreDelegate: AnyObject {
     func storeDidChange(_ store: TrackerStore)
 }
 
+// MARK: - Errors
+enum TrackerStoreError: Error {
+    case trackerNotFound
+    case categoryNotFound
+    case saveFailed
+    case fetchFailed
+    case contextNotFound
+}
+
 // MARK: - TrackerStore
 final class TrackerStore: NSObject {
     // MARK: - Properties
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>?
     private var cachedTrackers: [Tracker] = []
     
     weak var delegate: TrackerStoreDelegate?
@@ -18,13 +27,17 @@ final class TrackerStore: NSObject {
     // MARK: - Initialization
     override convenience init() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
-        try! self.init(context: context)
+        self.init(context: context)
     }
     
-    init(context: NSManagedObjectContext) throws {
+    init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
-        
+        setupFetchedResultsController()
+    }
+    
+    // MARK: - Setup
+    private func setupFetchedResultsController() {
         let fetchRequest = TrackerCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [
             NSSortDescriptor(keyPath: \TrackerCoreData.category?.title, ascending: true),
@@ -39,8 +52,13 @@ final class TrackerStore: NSObject {
         )
         controller.delegate = self
         self.fetchedResultsController = controller
-        try controller.performFetch()
-        updateCache()
+        
+        do {
+            try controller.performFetch()
+            updateCache()
+        } catch {
+            print("Failed to perform fetch: \(error)")
+        }
     }
     
     // MARK: - Public Properties
@@ -49,22 +67,22 @@ final class TrackerStore: NSObject {
     }
     
     var numberOfSections: Int {
-        return fetchedResultsController.sections?.count ?? 0
+        return fetchedResultsController?.sections?.count ?? 0
     }
     
     func numberOfItems(in section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        return fetchedResultsController?.sections?[section].numberOfObjects ?? 0
     }
     
     func tracker(at indexPath: IndexPath) -> Tracker? {
-        guard let coreData = fetchedResultsController.sections?[indexPath.section].objects?[indexPath.row] as? TrackerCoreData else {
+        guard let coreData = fetchedResultsController?.sections?[indexPath.section].objects?[indexPath.row] as? TrackerCoreData else {
             return nil
         }
         return convertToTracker(from: coreData)
     }
     
     func categoryTitle(at section: Int) -> String? {
-        return fetchedResultsController.sections?[section].name
+        return fetchedResultsController?.sections?[section].name
     }
     
     // MARK: - Create
@@ -93,7 +111,7 @@ final class TrackerStore: NSObject {
     func deleteTracker(by id: UUID) throws {
         let allTrackers = try fetchAllCoreDataTrackers()
         guard let tracker = allTrackers.first(where: { $0.id == id }) else {
-            throw NSError(domain: "TrackerStore", code: 404, userInfo: [NSLocalizedDescriptionKey: "Tracker not found"])
+            throw TrackerStoreError.trackerNotFound
         }
         context.delete(tracker)
         try saveContext()
@@ -110,7 +128,7 @@ final class TrackerStore: NSObject {
     ) throws {
         let allTrackers = try fetchAllCoreDataTrackers()
         guard let tracker = allTrackers.first(where: { $0.id == id }) else {
-            throw NSError(domain: "TrackerStore", code: 404, userInfo: [NSLocalizedDescriptionKey: "Tracker not found"])
+            throw TrackerStoreError.trackerNotFound
         }
         
         if let name = name { tracker.name = name }
@@ -159,17 +177,21 @@ final class TrackerStore: NSObject {
             .split(separator: ",")
             .compactMap { Schedule(rawValue: String($0)) }
         
+        guard let color = UIColor(hex: colorHex) else {
+            return nil
+        }
+        
         return Tracker(
             id: id,
             name: name,
             icon: icon,
-            color: UIColor(hex: colorHex) ?? .black,
+            color: color,
             schedule: schedule
         )
     }
     
     private func updateCache() {
-        cachedTrackers = (fetchedResultsController.fetchedObjects ?? [])
+        cachedTrackers = (fetchedResultsController?.fetchedObjects ?? [])
             .compactMap { convertToTracker(from: $0) }
     }
     
