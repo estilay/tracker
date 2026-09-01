@@ -2,7 +2,6 @@ import UIKit
 
 // MARK: - TrackerViewController
 final class TrackerViewController: UIViewController {
-    
     // MARK: - Properties
     private let trackerStore = TrackerStore()
     private let recordStore = TrackerRecordStore()

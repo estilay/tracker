@@ -7,11 +7,7 @@ final class ColorCollectionCell: UITableViewCell {
     var onColorSelected: ((UIColor) -> Void)?
     
     private var colors: [UIColor] = [
-        .systemRed, .systemOrange, .systemYellow, .systemGreen,
-        .systemBlue, .systemPurple, .systemPink, .systemTeal,
-        .systemIndigo, .systemMint, .systemCyan, .brown,
-        .systemGray, .black, .systemBlue, .systemGreen,
-        .systemRed, .systemOrange
+        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5, .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10, .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15, .colorSelection16, .colorSelection17, .colorSelection18
     ]
     
     private lazy var collectionView: UICollectionView = {
