@@ -245,17 +245,24 @@ extension NewHabitViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension NewHabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        enum Constants {
+            static let defaultRowHeight: CGFloat = 75
+            static let collectionItemHeight: CGFloat = 52
+            static let collectionTopAndBottomInset: CGFloat = 24
+            static let collectionHorizontalInset: CGFloat = 19
+            
+            static var collectionSectionHeight: CGFloat {
+                return collectionItemHeight * 3 + collectionTopAndBottomInset * 2 + collectionHorizontalInset
+            }
+        }
+        
         switch indexPath.section {
-        case 0:
-            return 75
-        case 1:
-            return 75
-        case 2:
-            return 52 * 3 + 48 + 19
-        case 3:
-            return 52 * 3 + 48 + 19
+        case 0, 1:
+            return Constants.defaultRowHeight
+        case 2, 3:
+            return Constants.collectionSectionHeight
         default:
-            return 75
+            return Constants.defaultRowHeight
         }
     }
     
