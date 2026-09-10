@@ -6,13 +6,21 @@ protocol CategorySelectionDelegate: AnyObject {
 
 // MARK: - CategoryViewController
 final class CategoryViewController: UIViewController {
+    
     // MARK: - Properties
     weak var delegate: CategorySelectionDelegate?
-    private var selectedCategory: String?
-    var preselectedCategory: String?
+    private let viewModel: CategoryViewModel
     
-    private let categoryStore = TrackerCategoryStore()
-    private var categories: [String] = []
+    // MARK: - Init
+    init(viewModel: CategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        nil
+    }
     
     // MARK: - UI Elements
     private lazy var tableView: UITableView = {
@@ -44,37 +52,34 @@ final class CategoryViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        loadCategories()
         
-        selectedCategory = preselectedCategory
+        setupUI()
+        bindViewModel()
+        viewModel.loadCategories()
+    }
+    
+    // MARK: - Bindings
+    private func bindViewModel() {
+        viewModel.onCategoriesChanged = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        
+        viewModel.onCategorySelected = { [weak self] category in
+            self?.delegate?.didSelectCategory(category)
+            self?.dismiss(animated: true)
+        }
     }
     
     // MARK: - Actions
     @objc private func didTapAddCategory() {
         let newCategoryVC = NewCategoryViewController()
         newCategoryVC.onCategoryCreated = { [weak self] category in
-            self?.saveCategory(category)
+            self?.viewModel.saveCategory(category)
         }
         
         let navController = UINavigationController(rootViewController: newCategoryVC)
         navController.modalPresentationStyle = .formSheet
         present(navController, animated: true)
-    }
-    
-    // MARK: - Private Methods
-    private func loadCategories() {
-        categories = categoryStore.allCategories.map { $0.title }
-        tableView.reloadData()
-    }
-    
-    private func saveCategory(_ title: String) {
-        do {
-            try categoryStore.createCategory(title: title)
-            loadCategories()
-        } catch {
-            print("[CategoryViewController]: Failed to save category: \(error)")
-        }
     }
     
     // MARK: - UI Methods
@@ -110,23 +115,19 @@ final class CategoryViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension CategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return viewModel.numberOfRows()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CategoryViewCell.identifier, for: indexPath)
-        let category = categories[indexPath.row]
+        let category = viewModel.category(at: indexPath)
         
         cell.textLabel?.text = category
         cell.backgroundColor = .cellGrayBackground
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
         
-        if category == selectedCategory {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        cell.accessoryType = viewModel.isSelected(at: indexPath) ? .checkmark : .none
         
         return cell
     }
@@ -136,11 +137,7 @@ extension CategoryViewController: UITableViewDataSource {
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        let category = categories[indexPath.row]
-        selectedCategory = category
-        delegate?.didSelectCategory(category)
-        dismiss(animated: true)
+        viewModel.didSelectRow(at: indexPath)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

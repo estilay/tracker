@@ -343,9 +343,10 @@ extension NewHabitViewController: UITableViewDelegate {
     
     // MARK: - Navigation
     private func showCategorySelection() {
-        let categoryVC = CategoryViewController()
+        let viewModel = CategoryViewModel(preselectedCategory: selectedCategory)
+        let categoryVC = CategoryViewController(viewModel: viewModel)
         categoryVC.delegate = self
-        categoryVC.preselectedCategory = selectedCategory
+        
         let navController = UINavigationController(rootViewController: categoryVC)
         navController.modalPresentationStyle = .formSheet
         present(navController, animated: true)
