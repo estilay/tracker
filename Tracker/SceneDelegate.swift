@@ -7,13 +7,17 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let onboardingVC = OnboardingPageViewController(
-            transitionStyle: .scroll,
-            navigationOrientation: .horizontal,
-            options: nil
-        )
+        if OnboardingStorage.hasCompleted {
+            window?.rootViewController = TabBarController()
+        } else {
+            let onboardingVC = OnboardingPageViewController(
+                transitionStyle: .scroll,
+                navigationOrientation: .horizontal,
+                options: nil
+            )
+            window?.rootViewController = onboardingVC
+        }
         
-        window?.rootViewController = onboardingVC
         window?.makeKeyAndVisible()
     }
 

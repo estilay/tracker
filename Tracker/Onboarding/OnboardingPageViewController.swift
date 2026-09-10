@@ -44,6 +44,7 @@ final class  OnboardingPageViewController: UIPageViewController {
     }
     
     @objc private func didTapOnboardingButton() {
+        OnboardingStorage.hasCompleted = true
         guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
         
         sceneDelegate.switchToTrackerViewContoller()
