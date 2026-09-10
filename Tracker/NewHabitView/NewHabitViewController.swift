@@ -3,7 +3,7 @@ import UIKit
 final class NewHabitViewController: UIViewController {
     // MARK: - Properties
     private var habitName = String()
-    private let selectedCategory: String = "Важное"
+    private var selectedCategory: String?
     private var selectedSchedule = String()
     private var selectedDays: [Schedule] = []
     private var selectedIcon: String?
@@ -81,7 +81,7 @@ final class NewHabitViewController: UIViewController {
             schedule: selectedDays
         )
         
-        onTrackerCreated?(tracker, selectedCategory)
+        onTrackerCreated?(tracker, selectedCategory ?? "")
         dismiss(animated: true)
     }
     
@@ -194,7 +194,7 @@ extension NewHabitViewController: UITableViewDataSource {
             
             switch indexPath.row {
             case 0:
-                cell.configure(title: "Категория", value: selectedCategory)
+                cell.configure(title: "Категория", value: selectedCategory ?? "")
                 cell.selectionStyle = .none
             case 1:
                 cell.configure(title: "Расписание", value: selectedSchedule)
@@ -276,7 +276,7 @@ extension NewHabitViewController: UITableViewDelegate {
         if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
-                break
+                showCategorySelection()
             case 1:
                 showScheduleSelection()
             default:
@@ -342,6 +342,15 @@ extension NewHabitViewController: UITableViewDelegate {
     }
     
     // MARK: - Navigation
+    private func showCategorySelection() {
+        let categoryVC = CategoryViewController()
+        categoryVC.delegate = self
+        categoryVC.preselectedCategory = selectedCategory
+        let navController = UINavigationController(rootViewController: categoryVC)
+        navController.modalPresentationStyle = .formSheet
+        present(navController, animated: true)
+    }
+    
     private func showScheduleSelection() {
         let scheduleVC = ScheduleViewController()
         scheduleVC.preselectedDays = selectedDays
@@ -385,5 +394,14 @@ extension NewHabitViewController: HabitNameCellDelegate {
         
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+}
+
+// MARK: - CategorySelectionDelegate
+extension NewHabitViewController: CategorySelectionDelegate {
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        let indexPath = IndexPath(row: 0, section: 1)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
