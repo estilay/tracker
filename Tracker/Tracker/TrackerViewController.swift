@@ -5,6 +5,7 @@ final class TrackerViewController: UIViewController {
     // MARK: - Properties
     private let trackerStore = TrackerStore()
     private let recordStore = TrackerRecordStore()
+    private let categoryStore = TrackerCategoryStore()
     
     private var selectedDate: Date = Date()
     private var filteredCategories: [TrackerCategory] = []
@@ -39,7 +40,6 @@ final class TrackerViewController: UIViewController {
         stubContainerView.spacing = 8
         stubContainerView.alignment = .center
         stubContainerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stubContainerView)
         return stubContainerView
     }()
     
@@ -63,6 +63,7 @@ final class TrackerViewController: UIViewController {
     private func setupStoreDelegates() {
         trackerStore.delegate = self
         recordStore.delegate = self
+        categoryStore.delegate = self
     }
     
     // MARK: - Actions
@@ -113,14 +114,28 @@ final class TrackerViewController: UIViewController {
             tracker.schedule.contains(selectedDay)
         }
         
-        let grouped = Dictionary(grouping: filteredTrackers) { tracker -> String in
-            // TODO: - Get Category from Store
-            return "Важное"
+        let allCategories = categoryStore.allCategories
+        
+        var categoryDict: [String: [Tracker]] = [:]
+        
+        for category in allCategories {
+            categoryDict[category.title] = []
         }
         
-        filteredCategories = grouped.map { categoryTitle, trackers in
-            TrackerCategory(title: categoryTitle, trackers: trackers)
-        }.sorted { $0.title < $1.title }
+        for tracker in filteredTrackers {
+            if let category = trackerStore.getCategory(for: tracker.id) {
+                if categoryDict[category.title] != nil {
+                    categoryDict[category.title]?.append(tracker)
+                } else {
+                    categoryDict[category.title] = [tracker]
+                }
+            }
+        }
+        
+        filteredCategories = categoryDict
+            .filter { !$0.value.isEmpty }
+            .map { TrackerCategory(title: $0.key, trackers: $0.value) }
+            .sorted { $0.title < $1.title }
         
         collectionView.reloadData()
         updateStubVisibility()
@@ -187,13 +202,14 @@ extension TrackerViewController {
     
     private func setupCollectionView() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stubContainerView)
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
         collectionView.dataSource = self
@@ -301,6 +317,13 @@ extension TrackerViewController: TrackerStoreDelegate {
 // MARK: - TrackerRecordStoreDelegate
 extension TrackerViewController: TrackerRecordStoreDelegate {
     func storeDidChange(_ store: TrackerRecordStore) {
+        applyFilters()
+    }
+}
+
+// MARK: - TrackerCategoryStoreDelegate
+extension TrackerViewController: TrackerCategoryStoreDelegate {
+    func storeDidChange(_ store: TrackerCategoryStore) {
         applyFilters()
     }
 }

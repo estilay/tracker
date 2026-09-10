@@ -201,6 +201,28 @@ final class TrackerStore: NSObject {
     }
 }
 
+// MARK: - Public Methods
+extension TrackerStore {
+    func getCategory(for trackerId: UUID) -> TrackerCategory? {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", trackerId as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        do {
+            guard let trackerCoreData = try context.fetch(fetchRequest).first,
+                  let categoryCoreData = trackerCoreData.category,
+                  let title = categoryCoreData.title else {
+                return nil
+            }
+            
+            return TrackerCategory(title: title, trackers: [])
+        } catch {
+            print("[TrackerStore]: Failed to fetch category for tracker: \(error)")
+            return nil
+        }
+    }
+}
+
 // MARK: - NSFetchedResultsControllerDelegate
 extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

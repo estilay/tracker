@@ -5,9 +5,25 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
-        
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = TabBarController()
+        
+        if OnboardingStorage.hasCompleted {
+            window?.rootViewController = TabBarController()
+        } else {
+            let onboardingVC = OnboardingPageViewController(
+                transitionStyle: .scroll,
+                navigationOrientation: .horizontal,
+                options: nil
+            )
+            window?.rootViewController = onboardingVC
+        }
+        
+        window?.makeKeyAndVisible()
+    }
+
+    func switchToTrackerViewContoller() {
+        let tabBarVC = TabBarController()
+        window?.rootViewController = tabBarVC
         window?.makeKeyAndVisible()
     }
     
