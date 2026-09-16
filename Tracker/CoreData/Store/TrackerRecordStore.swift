@@ -88,19 +88,13 @@ final class TrackerRecordStore: NSObject {
     }
     
     // MARK: - Delete Record
-    func removeRecord(trackerId: UUID, date: Date) throws {
+    func deleteRecord(for trackerId: UUID) throws {
         let allRecords = try fetchAllCoreDataRecords()
-        let calendar = Calendar.current
-        let startOfDay = calendar.startOfDay(for: date)
+        let recordsToDelete = allRecords.filter { $0.id == trackerId }
         
-        guard let record = allRecords.first(where: { coreData in
-            guard let recordDate = coreData.date else { return false }
-            return coreData.id == trackerId && calendar.isDate(recordDate, inSameDayAs: startOfDay)
-        }) else {
-            return
-        }
+        guard !recordsToDelete.isEmpty else { return }
         
-        context.delete(record)
+        recordsToDelete.forEach { context.delete($0) }
         try saveContext()
     }
     

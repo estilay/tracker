@@ -138,6 +138,15 @@ final class TrackerViewController: UIViewController {
         }
     }
     
+    private func deleteTracker(with trackerId: UUID) {
+        do {
+            try recordStore.deleteRecord(for: trackerId)
+            try trackerStore.deleteTracker(by: trackerId)
+        } catch {
+            print("[TrackerViewController]: Failed to delete tracker: \(error)")
+        }
+    }
+    
     private func applyFilters() {
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: selectedDate)
@@ -372,7 +381,7 @@ extension TrackerViewController: TrackerCellDelegate {
             let isCompletedToday = try recordStore.isRecordExists(trackerId: trackerId, date: selectedDate)
             
             if isCompletedToday {
-                try recordStore.removeRecord(trackerId: trackerId, date: selectedDate)
+                try recordStore.deleteRecord(for: trackerId)
             } else {
                 try recordStore.addRecord(trackerId: trackerId, date: selectedDate)
             }
@@ -381,6 +390,14 @@ extension TrackerViewController: TrackerCellDelegate {
         } catch {
             print("[TrackerViewController.TrackerCellDelegate]: \(error)")
         }
+    }
+    
+    func trackerCellDidRequestEdit(_ cell: TrackerViewCell, trackerId: UUID) {
+        print("Edit requested for tracker: \(trackerId)")
+    }
+    
+    func trackerCellDidRequestDelete(_ cell: TrackerViewCell, trackerId: UUID) {
+        deleteTracker(with: trackerId)
     }
 }
 
