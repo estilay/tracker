@@ -9,6 +9,7 @@ final class TrackerViewController: UIViewController {
     
     private var selectedDate: Date = Date()
     private var filteredCategories: [TrackerCategory] = []
+    private var searchText: String = ""
     
     private var currentFilter: TrackerFilter? {
         get { FilterStorage.shared.currentFilter }
@@ -66,6 +67,14 @@ final class TrackerViewController: UIViewController {
         button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        return searchController
     }()
     
     // MARK: - Lifecycle
@@ -136,21 +145,24 @@ final class TrackerViewController: UIViewController {
         
         let allTrackers = trackerStore.allTrackers
         
-        let trackersForDay = allTrackers.filter { tracker in
+        var filteredTrackers = allTrackers.filter { tracker in
             tracker.schedule.contains(selectedDay)
         }
         
-        let filteredTrackers: [Tracker]
+        if !searchText.isEmpty {
+            filteredTrackers = filteredTrackers.filter { tracker in
+                tracker.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
         if let currentFilter {
-            filteredTrackers = trackersForDay.filter { tracker in
+            filteredTrackers = filteredTrackers.filter { tracker in
                 let isCompleted = (try? recordStore.isRecordExists(trackerId: tracker.id, date: selectedDate)) ?? false
                 switch currentFilter {
                 case .completed:    return isCompleted
                 case .notCompleted: return !isCompleted
                 }
             }
-        } else {
-            filteredTrackers = trackersForDay
         }
         
         let allCategories = categoryStore.allCategories
@@ -193,6 +205,12 @@ final class TrackerViewController: UIViewController {
         collectionView.isHidden = !hasTrackers
         
         guard !hasTrackers else { return }
+        
+        if !searchText.isEmpty {
+            stubImageView.image = UIImage(resource: .notFound)
+            stubLabel.text = "Ничего не найдено"
+            return
+        }
         
         switch currentFilter {
         case .none:
@@ -255,9 +273,8 @@ extension TrackerViewController {
         navigationItem.leftBarButtonItem = addButton
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "Поиск"
         navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     private func setupCollectionView() {
@@ -398,6 +415,14 @@ extension TrackerViewController: FilterSelectionDelegate {
         
         currentFilter = filter.trackerFilter
         
+        applyFilters()
+    }
+}
+
+// MARK: - UISearchResultsUpdating
+extension TrackerViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        searchText = searchController.searchBar.text ?? ""
         applyFilters()
     }
 }
