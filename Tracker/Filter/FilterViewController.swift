@@ -10,7 +10,7 @@ final class FilterViewController: UIViewController {
     weak var delegate: FilterSelectionDelegate?
     
     private let filters = FilterType.allCases
-    private var selectedFilter: FilterType = .all
+    private var selectedFilter: FilterType
     
     // MARK: - UI Elements
     private lazy var tableView: UITableView = {
@@ -25,6 +25,15 @@ final class FilterViewController: UIViewController {
         
         return tableView
     }()
+    
+    // MARK: - Initialization
+    init(selectedFilter: FilterType = .all) {
+        self.selectedFilter = selectedFilter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -110,5 +119,3 @@ extension FilterViewController: UITableViewDelegate {
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
 }
-
-

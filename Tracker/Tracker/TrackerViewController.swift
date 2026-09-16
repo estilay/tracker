@@ -10,6 +10,11 @@ final class TrackerViewController: UIViewController {
     private var selectedDate: Date = Date()
     private var filteredCategories: [TrackerCategory] = []
     
+    private var currentFilter: TrackerFilter? {
+        get { FilterStorage.shared.currentFilter }
+        set { FilterStorage.shared.currentFilter = newValue }
+    }
+    
     // MARK: - UI Elements
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -94,7 +99,8 @@ final class TrackerViewController: UIViewController {
     
     @objc
     private func didTapFilterButton() {
-        let filterVC = FilterViewController()
+        let filterVC = FilterViewController(selectedFilter: FilterType.from(currentFilter))
+        filterVC.delegate = self
         let navController = UINavigationController(rootViewController: filterVC)
         navController.modalPresentationStyle = .formSheet
         present(navController, animated: true)
@@ -130,8 +136,21 @@ final class TrackerViewController: UIViewController {
         
         let allTrackers = trackerStore.allTrackers
         
-        let filteredTrackers = allTrackers.filter { tracker in
+        let trackersForDay = allTrackers.filter { tracker in
             tracker.schedule.contains(selectedDay)
+        }
+        
+        let filteredTrackers: [Tracker]
+        if let currentFilter {
+            filteredTrackers = trackersForDay.filter { tracker in
+                let isCompleted = (try? recordStore.isRecordExists(trackerId: tracker.id, date: selectedDate)) ?? false
+                switch currentFilter {
+                case .completed:    return isCompleted
+                case .notCompleted: return !isCompleted
+                }
+            }
+        } else {
+            filteredTrackers = trackersForDay
         }
         
         let allCategories = categoryStore.allCategories
@@ -173,8 +192,18 @@ final class TrackerViewController: UIViewController {
         stubContainerView.isHidden = hasTrackers
         collectionView.isHidden = !hasTrackers
         
-        if !hasTrackers {
+        guard !hasTrackers else { return }
+        
+        switch currentFilter {
+        case .none:
+            stubImageView.image = UIImage(resource: .dizzy)
             stubLabel.text = "Что будем отслеживать?"
+        case .completed:
+            stubImageView.image = UIImage(resource: .notFound)
+            stubLabel.text = "Ничего не найдено"
+        case .notCompleted:
+            stubImageView.image = UIImage(resource: .notFound)
+            stubLabel.text = "Ничего не найдено"
         }
     }
     
@@ -355,6 +384,20 @@ extension TrackerViewController: TrackerRecordStoreDelegate {
 // MARK: - TrackerCategoryStoreDelegate
 extension TrackerViewController: TrackerCategoryStoreDelegate {
     func storeDidChange(_ store: TrackerCategoryStore) {
+        applyFilters()
+    }
+}
+
+// MARK: - FilterSelectionDelegate
+extension TrackerViewController: FilterSelectionDelegate {
+    func didSelectFilter(_ filter: FilterType) {
+        if filter.resetsDateToToday {
+            selectedDate = Date()
+            datePicker.date = selectedDate
+        }
+        
+        currentFilter = filter.trackerFilter
+        
         applyFilters()
     }
 }

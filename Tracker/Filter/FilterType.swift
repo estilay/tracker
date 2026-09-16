@@ -16,9 +16,26 @@ enum FilterType: Int, CaseIterable {
     }
     
     var showsCheckmark: Bool {
+        self == .completed || self == .notCompleted
+    }
+    
+    var resetsDateToToday: Bool {
+        self == .today
+    }
+    
+    var trackerFilter: TrackerFilter? {
         switch self {
-        case .all, .today:              return false
-        case .completed, .notCompleted: return true
+        case .all, .today:  return nil
+        case .completed:    return .completed
+        case .notCompleted: return .notCompleted
+        }
+    }
+    
+    static func from(_ filter: TrackerFilter?) -> FilterType {
+        switch filter {
+        case .none:         return .all
+        case .completed:    return .completed
+        case .notCompleted: return .notCompleted
         }
     }
 }
