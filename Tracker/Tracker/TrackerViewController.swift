@@ -51,6 +51,18 @@ final class TrackerViewController: UIViewController {
         return datePicker
     }()
     
+    private lazy var filterButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 16
+        button.backgroundColor = .yBlue
+        button.setTitle("Фильтры", for: .normal)
+        button.setTitleColor(.yWhiteDay, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,6 +90,13 @@ final class TrackerViewController: UIViewController {
         }
         
         present(navController, animated: true)
+    }
+    
+    @objc
+    private func didTapFilterButton() {
+        let filterVC = FilterViewController()
+        filterVC.modalPresentationStyle = .formSheet
+        present(filterVC, animated: true)
     }
     
     @objc
@@ -174,6 +193,17 @@ extension TrackerViewController {
         setupNavigationBar()
         setupCollectionView()
         setupStubContainerViewConstraints()
+        setupFilterButton()
+    }
+    
+    private func setupFilterButton() {
+        view.addSubview(filterButton)
+        NSLayoutConstraint.activate([
+            filterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filterButton.heightAnchor.constraint(equalToConstant: 50),
+            filterButton.widthAnchor.constraint(equalToConstant: 114),
+            filterButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+        ])
     }
     
     private func setupNavigationBar() {
