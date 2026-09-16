@@ -95,8 +95,9 @@ final class TrackerViewController: UIViewController {
     @objc
     private func didTapFilterButton() {
         let filterVC = FilterViewController()
-        filterVC.modalPresentationStyle = .formSheet
-        present(filterVC, animated: true)
+        let navController = UINavigationController(rootViewController: filterVC)
+        navController.modalPresentationStyle = .formSheet
+        present(navController, animated: true)
     }
     
     @objc
