@@ -5,7 +5,7 @@ final class EmojiCollectionCell: UITableViewCell {
     static let identifier = "EmojiCollectionCell"
     
     var onEmojiSelected: ((String) -> Void)?
-    
+    private var selectedEmoji: String?
     private let emojies: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
     private lazy var collectionView: UICollectionView = {
@@ -16,7 +16,7 @@ final class EmojiCollectionCell: UITableViewCell {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(EmojiViewCell.self, forCellWithReuseIdentifier: EmojiViewCell.identifier)
-        collectionView.register(NewHabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewHabitHeaderView.identifier)
+        collectionView.register(HabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HabitHeaderView.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.allowsMultipleSelection = false
@@ -35,6 +35,11 @@ final class EmojiCollectionCell: UITableViewCell {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         nil
+    }
+    
+    func setSelectedEmoji(_ emoji: String?) {
+        selectedEmoji = emoji
+        collectionView.reloadData()
     }
     
     private func setupUI() {
@@ -58,14 +63,20 @@ extension EmojiCollectionCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiViewCell.identifier, for: indexPath) as? EmojiViewCell else { return UICollectionViewCell() }
-        cell.emojiView.text = emojies[indexPath.row]
+        
+        let emoji = emojies[indexPath.row]
+        cell.emojiView.text = emoji
+        
+        let isSelected = emoji == selectedEmoji
+        cell.emojiView.backgroundColor = isSelected ? .yLightGray : .clear
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
         
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: NewHabitHeaderView.identifier, for: indexPath) as? NewHabitHeaderView else { return UICollectionReusableView() }
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitHeaderView.identifier, for: indexPath) as? HabitHeaderView else { return UICollectionReusableView() }
         
         header.titleLabel.text = "Emoji"
         header.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
@@ -80,14 +91,10 @@ extension EmojiCollectionCell: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? EmojiViewCell
-        cell?.emojiView.backgroundColor = .yLightGray
-        onEmojiSelected?(emojies[indexPath.row])
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? EmojiViewCell
-        cell?.emojiView.backgroundColor = .clear
+        let emoji = emojies[indexPath.row]
+        selectedEmoji = emoji
+        collectionView.reloadData()
+        onEmojiSelected?(emoji)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

@@ -26,7 +26,7 @@ final class FilterViewController: UIViewController {
         return tableView
     }()
     
-    // MARK: - Initialization
+    // MARK: - Init
     init(selectedFilter: FilterType = .all) {
         self.selectedFilter = selectedFilter
         super.init(nibName: nil, bundle: nil)

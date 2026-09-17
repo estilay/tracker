@@ -6,6 +6,8 @@ final class ColorCollectionCell: UITableViewCell {
     
     var onColorSelected: ((UIColor) -> Void)?
     
+    private var selectedColor: UIColor?
+    
     private var colors: [UIColor] = [
         .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5, .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10, .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15, .colorSelection16, .colorSelection17, .colorSelection18
     ]
@@ -18,7 +20,7 @@ final class ColorCollectionCell: UITableViewCell {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(ColorViewCell.self, forCellWithReuseIdentifier: ColorViewCell.identifier)
-        collectionView.register(NewHabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewHabitHeaderView.identifier)
+        collectionView.register(HabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HabitHeaderView.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.allowsMultipleSelection = false
@@ -39,6 +41,11 @@ final class ColorCollectionCell: UITableViewCell {
         nil
     }
     
+    func setSelectedColor(_ color: UIColor?) {
+        selectedColor = color
+        collectionView.reloadData()
+    }
+    
     private func setupUI() {
         contentView.addSubview(collectionView)
         contentView.backgroundColor = .clear
@@ -50,6 +57,16 @@ final class ColorCollectionCell: UITableViewCell {
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
         ])
     }
+    
+    // MARK: - Color Comparison
+    private func isSameColor(_ lhs: UIColor, _ rhs: UIColor) -> Bool {
+        guard let lhsComponents = lhs.cgColor.components,
+              let rhsComponents = rhs.cgColor.components,
+              lhsComponents.count == rhsComponents.count else {
+            return false
+        }
+        return zip(lhsComponents, rhsComponents).allSatisfy { abs($0 - $1) < 0.001 }
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -60,14 +77,21 @@ extension ColorCollectionCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorViewCell.identifier, for: indexPath) as? ColorViewCell else { return UICollectionViewCell() }
-        cell.colorRectangleView.backgroundColor = colors[indexPath.row]
+        
+        let color = colors[indexPath.row]
+        cell.colorRectangleView.backgroundColor = color
+        
+        let isSelected = selectedColor.map { isSameColor($0, color) } ?? false
+        cell.pickedColorView.layer.borderWidth = isSelected ? 3 : 0
+        cell.pickedColorView.layer.borderColor = isSelected ? color.withAlphaComponent(0.3).cgColor : UIColor.clear.cgColor
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
         
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: NewHabitHeaderView.identifier, for: indexPath) as? NewHabitHeaderView else { return UICollectionReusableView() }
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitHeaderView.identifier, for: indexPath) as? HabitHeaderView else { return UICollectionReusableView() }
         
         header.titleLabel.text = "Цвет"
         header.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
@@ -82,16 +106,10 @@ extension ColorCollectionCell: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? ColorViewCell
-        cell?.pickedColorView.layer.borderWidth = 3
-        cell?.pickedColorView.layer.borderColor = colors[indexPath.row].withAlphaComponent(0.3).cgColor
-        onColorSelected?(colors[indexPath.row])
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? ColorViewCell
-        cell?.pickedColorView.layer.borderWidth = 0
-        cell?.pickedColorView.layer.borderColor = UIColor.clear.cgColor
+        let color = colors[indexPath.row]
+        selectedColor = color
+        collectionView.reloadData()
+        onColorSelected?(color)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

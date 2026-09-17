@@ -1,7 +1,14 @@
 import UIKit
 
-final class NewHabitViewController: UIViewController {
+enum HabitMode {
+    case create
+    case edit(Tracker, category: String)
+}
+
+final class HabitViewController: UIViewController {
     // MARK: - Properties
+    private let mode: HabitMode
+    
     private var habitName = String()
     private var selectedCategory: String?
     private var selectedSchedule = String()
@@ -9,8 +16,42 @@ final class NewHabitViewController: UIViewController {
     private var selectedIcon: String?
     private var selectedColor: UIColor?
     private var isCharacterLimitExceeded = false
+    private var completedDaysCount: Int = 0
     
     var onTrackerCreated: ((Tracker, String) -> Void)?
+    var onTrackerUpdated: ((Tracker, String) -> Void)?
+    
+    // MARK: - Init
+    init(mode: HabitMode = .create) {
+        self.mode = mode
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        nil
+    }
+    
+    // MARK: - Section
+    private enum Section {
+        case daysCount
+        case name
+        case details
+        case emoji
+        case color
+    }
+    
+    // MARK: - Constants
+    private enum Constants {
+        static let defaultRowHeight: CGFloat = 75
+        static let collectionItemHeight: CGFloat = 52
+        static let collectionTopAndBottomInset: CGFloat = 24
+        static let collectionHorizontalInset: CGFloat = 19
+        
+        static var collectionSectionHeight: CGFloat {
+            return collectionItemHeight * 3 + collectionTopAndBottomInset * 2 + collectionHorizontalInset
+        }
+    }
     
     // MARK: - UI Elements
     private lazy var tableView: UITableView = {
@@ -22,6 +63,7 @@ final class NewHabitViewController: UIViewController {
         tableView.register(HabitNameCell.self, forCellReuseIdentifier: HabitNameCell.identifier)
         tableView.register(EmojiCollectionCell.self, forCellReuseIdentifier: EmojiCollectionCell.identifier)
         tableView.register(ColorCollectionCell.self, forCellReuseIdentifier: ColorCollectionCell.identifier)
+        tableView.register(DaysCountCell.self, forCellReuseIdentifier: DaysCountCell.identifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 75
         tableView.separatorStyle = .singleLine
@@ -68,6 +110,68 @@ final class NewHabitViewController: UIViewController {
         
         setupUI()
         setupHideKeyboardOnTap()
+        applyMode()
+    }
+    
+    // MARK: - Mode
+    private func applyMode() {
+        switch mode {
+        case .create:
+            title = "Новая привычка"
+            createButton.setTitle("Создать", for: .normal)
+            
+        case .edit(let tracker, let category):
+            title = "Редактирование привычки"
+            createButton.setTitle("Сохранить", for: .normal)
+            
+            habitName = tracker.name
+            selectedIcon = tracker.icon
+            selectedColor = tracker.color
+            selectedDays = tracker.schedule
+            selectedCategory = category.isEmpty ? nil : category
+            selectedSchedule = scheduleText(from: tracker.schedule)
+            completedDaysCount = (try? TrackerRecordStore().countRecords(for: tracker.id)) ?? 0
+            
+            updateCreateButtonState()
+            tableView.reloadData()
+        }
+    }
+    
+    private func scheduleText(from days: [Schedule]) -> String {
+        if days.count == 7 {
+            return "Каждый день"
+        } else if days.isEmpty {
+            return ""
+        } else {
+            return days.map { $0.short }.joined(separator: ", ")
+        }
+    }
+    
+    private func currentTrackerId() -> UUID {
+        if case .edit(let tracker, _) = mode {
+            return tracker.id
+        }
+        return UUID()
+    }
+    
+    private func adjustedSection(for section: Int) -> Section {
+        switch mode {
+        case .create:
+            switch section {
+            case 0: return .name
+            case 1: return .details
+            case 2: return .emoji
+            default: return .color
+            }
+        case .edit:
+            switch section {
+            case 0: return .daysCount
+            case 1: return .name
+            case 2: return .details
+            case 3: return .emoji
+            default: return .color
+            }
+        }
     }
     
     // MARK: - Actions
@@ -75,13 +179,20 @@ final class NewHabitViewController: UIViewController {
         guard !habitName.isEmpty else { return }
         
         let tracker = Tracker(
+            id: currentTrackerId(),
             name: habitName,
             icon: selectedIcon ?? "😄",
             color: selectedColor ?? .colorSelection5,
             schedule: selectedDays
         )
         
-        onTrackerCreated?(tracker, selectedCategory ?? "")
+        switch mode {
+        case .create:
+            onTrackerCreated?(tracker, selectedCategory ?? "")
+        case .edit:
+            onTrackerUpdated?(tracker, selectedCategory ?? "")
+        }
+        
         dismiss(animated: true)
     }
     
@@ -107,7 +218,7 @@ final class NewHabitViewController: UIViewController {
 }
 
 // MARK: - UI Methods
-extension NewHabitViewController {
+extension HabitViewController {
     private func setupUI() {
         view.backgroundColor = .yWhiteDay
         
@@ -120,7 +231,6 @@ extension NewHabitViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Новая привычка"
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor(resource: .yBlackDay),
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -148,50 +258,55 @@ extension NewHabitViewController {
 }
 
 // MARK: - UITableViewDataSource
-extension NewHabitViewController: UITableViewDataSource {
+extension HabitViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        4
+        switch mode {
+        case .create: return 4
+        case .edit:   return 5
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
-            return 1
-        case 1:
-            return 2
-        case 2:
-            return 1
-        case 3:
-            return 1
-        default:
-            return 0
+        switch adjustedSection(for: section) {
+        case .daysCount: return 1
+        case .name:      return 1
+        case .details:   return 2
+        case .emoji:     return 1
+        case .color:     return 1
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        switch adjustedSection(for: indexPath.section) {
+        case .daysCount:
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: DaysCountCell.identifier,
+                for: indexPath
+            ) as? DaysCountCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: completedDaysCount)
+            return cell
+            
+        case .name:
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: HabitNameCell.identifier,
                 for: indexPath
             ) as? HabitNameCell else {
                 return UITableViewCell()
             }
-            
             cell.textField.text = habitName
             cell.delegate = self
             cell.selectionStyle = .none
-            
             return cell
             
-        case 1:
+        case .details:
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: HabitDetailCell.identifier,
                 for: indexPath
             ) as? HabitDetailCell else {
                 return UITableViewCell()
             }
-            
             switch indexPath.row {
             case 0:
                 cell.configure(title: "Категория", value: selectedCategory ?? "")
@@ -201,68 +316,51 @@ extension NewHabitViewController: UITableViewDataSource {
             default:
                 break
             }
-            
             return cell
             
-        case 2:
+        case .emoji:
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: EmojiCollectionCell.identifier,
                 for: indexPath
             ) as? EmojiCollectionCell else {
                 return UITableViewCell()
             }
-            
+            cell.setSelectedEmoji(selectedIcon)
             cell.onEmojiSelected = { [weak self] emoji in
                 self?.selectedIcon = emoji
                 self?.updateCreateButtonState()
             }
             cell.selectionStyle = .none
-            
             return cell
             
-        case 3:
+        case .color:
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: ColorCollectionCell.identifier,
                 for: indexPath
             ) as? ColorCollectionCell else {
                 return UITableViewCell()
             }
-            
+            cell.setSelectedColor(selectedColor)
             cell.onColorSelected = { [weak self] color in
                 self?.selectedColor = color
                 self?.updateCreateButtonState()
             }
             cell.selectionStyle = .none
-            
             return cell
-            
-        default:
-            return UITableViewCell()
         }
     }
 }
 
 // MARK: - UITableViewDelegate
-extension NewHabitViewController: UITableViewDelegate {
+extension HabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        enum Constants {
-            static let defaultRowHeight: CGFloat = 75
-            static let collectionItemHeight: CGFloat = 52
-            static let collectionTopAndBottomInset: CGFloat = 24
-            static let collectionHorizontalInset: CGFloat = 19
-            
-            static var collectionSectionHeight: CGFloat {
-                return collectionItemHeight * 3 + collectionTopAndBottomInset * 2 + collectionHorizontalInset
-            }
-        }
-        
-        switch indexPath.section {
-        case 0, 1:
+        switch adjustedSection(for: indexPath.section) {
+        case .daysCount:
+            return UITableView.automaticDimension
+        case .name, .details:
             return Constants.defaultRowHeight
-        case 2, 3:
+        case .emoji, .color:
             return Constants.collectionSectionHeight
-        default:
-            return Constants.defaultRowHeight
         }
     }
     
@@ -273,31 +371,26 @@ extension NewHabitViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if indexPath.section == 1 {
-            switch indexPath.row {
-            case 0:
-                showCategorySelection()
-            case 1:
-                showScheduleSelection()
-            default:
-                break
-            }
+        guard adjustedSection(for: indexPath.section) == .details else { return }
+        
+        switch indexPath.row {
+        case 0:
+            showCategorySelection()
+        case 1:
+            showScheduleSelection()
+        default:
+            break
         }
     }
     
     // MARK: - Header
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch section {
-        case 0:
-            return 0
-        case 1:
-            return 24
-        case 2:
-            return 32
-        case 3:
-            return 16
-        default:
-            return 0
+        switch adjustedSection(for: section) {
+        case .daysCount: return 0
+        case .name:      return 0
+        case .details:   return 24
+        case .emoji:     return 32
+        case .color:     return 16
         }
     }
     
@@ -309,36 +402,35 @@ extension NewHabitViewController: UITableViewDelegate {
     
     // MARK: - Footer
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == 0 && isCharacterLimitExceeded {
+        if adjustedSection(for: section) == .name && isCharacterLimitExceeded {
             return 38
         }
-        
         return 0
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if section == 0 && isCharacterLimitExceeded {
-            let footerView = UIView()
-            footerView.backgroundColor = .clear
-            
-            let errorLabel = UILabel()
-            errorLabel.text = "Ограничение 38 символов"
-            errorLabel.textColor = .yRed
-            errorLabel.font = .systemFont(ofSize: 17, weight: .regular)
-            errorLabel.numberOfLines = 1
-            errorLabel.translatesAutoresizingMaskIntoConstraints = false
-            
-            footerView.addSubview(errorLabel)
-            
-            NSLayoutConstraint.activate([
-                errorLabel.centerXAnchor.constraint(equalTo: footerView.centerXAnchor),
-                errorLabel.centerYAnchor.constraint(equalTo: footerView.centerYAnchor)
-            ])
-            
-            return footerView
+        guard adjustedSection(for: section) == .name && isCharacterLimitExceeded else {
+            return nil
         }
         
-        return nil
+        let footerView = UIView()
+        footerView.backgroundColor = .clear
+        
+        let errorLabel = UILabel()
+        errorLabel.text = "Ограничение 38 символов"
+        errorLabel.textColor = .yRed
+        errorLabel.font = .systemFont(ofSize: 17, weight: .regular)
+        errorLabel.numberOfLines = 1
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        footerView.addSubview(errorLabel)
+        
+        NSLayoutConstraint.activate([
+            errorLabel.centerXAnchor.constraint(equalTo: footerView.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: footerView.centerYAnchor)
+        ])
+        
+        return footerView
     }
     
     // MARK: - Navigation
@@ -358,15 +450,7 @@ extension NewHabitViewController: UITableViewDelegate {
         
         scheduleVC.onSave = { [weak self] days in
             self?.selectedDays = days
-            
-            if days.count == 7 {
-                self?.selectedSchedule = "Каждый день"
-            } else if days.isEmpty {
-                self?.selectedSchedule = ""
-            } else {
-                self?.selectedSchedule = days.map { $0.short }.joined(separator: ", ")
-            }
-            
+            self?.selectedSchedule = self?.scheduleText(from: days) ?? ""
             self?.updateScheduleCell()
             self?.updateCreateButtonState()
         }
@@ -377,13 +461,18 @@ extension NewHabitViewController: UITableViewDelegate {
     }
     
     private func updateScheduleCell() {
-        let indexPath = IndexPath(row: 1, section: 1)
+        let section: Int
+        switch mode {
+        case .create: section = 1
+        case .edit:   section = 2
+        }
+        let indexPath = IndexPath(row: 1, section: section)
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
 
 // MARK: - HabitNameCellDelegate
-extension NewHabitViewController: HabitNameCellDelegate {
+extension HabitViewController: HabitNameCellDelegate {
     func habitNameDidChange(_ name: String) {
         habitName = name
         updateCreateButtonState()
@@ -399,10 +488,16 @@ extension NewHabitViewController: HabitNameCellDelegate {
 }
 
 // MARK: - CategorySelectionDelegate
-extension NewHabitViewController: CategorySelectionDelegate {
+extension HabitViewController: CategorySelectionDelegate {
     func didSelectCategory(_ category: String) {
         selectedCategory = category
-        let indexPath = IndexPath(row: 0, section: 1)
+        
+        let section: Int
+        switch mode {
+        case .create: section = 1
+        case .edit:   section = 2
+        }
+        let indexPath = IndexPath(row: 0, section: section)
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

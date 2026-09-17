@@ -95,7 +95,7 @@ final class TrackerViewController: UIViewController {
     // MARK: - Actions
     @objc
     private func didTapAddButton() {
-        let newHabitVC = NewHabitViewController()
+        let newHabitVC = HabitViewController()
         let navController = UINavigationController(rootViewController: newHabitVC)
         newHabitVC.modalPresentationStyle = .formSheet
         
@@ -135,6 +135,21 @@ final class TrackerViewController: UIViewController {
             applyFilters()
         } catch {
             print("Creating tracker failed: \(error)")
+        }
+    }
+    
+    private func updateTracker(_ tracker: Tracker, categoryTitle: String) {
+        do {
+            try trackerStore.updateTracker(
+                id: tracker.id,
+                name: tracker.name,
+                icon: tracker.icon,
+                color: tracker.color,
+                schedule: tracker.schedule,
+                categoryTitle: categoryTitle
+            )
+        } catch {
+            print("[TrackerViewController]: Failed to update tracker: \(error)")
         }
     }
     
@@ -393,7 +408,17 @@ extension TrackerViewController: TrackerCellDelegate {
     }
     
     func trackerCellDidRequestEdit(_ cell: TrackerViewCell, trackerId: UUID) {
-        print("Edit requested for tracker: \(trackerId)")
+        guard let tracker = trackerStore.allTrackers.first(where: { $0.id == trackerId }) else { return }
+        let category = trackerStore.getCategory(for: trackerId)?.title ?? ""
+        
+        let editVC = HabitViewController(mode: .edit(tracker, category: category))
+        editVC.onTrackerUpdated = { [weak self] updatedTracker, categoryTitle in
+            self?.updateTracker(updatedTracker, categoryTitle: categoryTitle)
+        }
+        
+        let navController = UINavigationController(rootViewController: editVC)
+        navController.modalPresentationStyle = .formSheet
+        present(navController, animated: true)
     }
     
     func trackerCellDidRequestDelete(_ cell: TrackerViewCell, trackerId: UUID) {
