@@ -16,6 +16,8 @@ final class TrackerViewController: UIViewController {
         set { FilterStorage.shared.currentFilter = newValue }
     }
     
+    private let analyticsService = AnalyticsService()
+    
     // MARK: - UI Elements
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -85,6 +87,16 @@ final class TrackerViewController: UIViewController {
         updateTrackersForSelectedDate()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        analyticsService.reportOpen(screen: .main)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        analyticsService.reportClose(screen: .main)
+    }
+    
     // MARK: - Setup
     private func setupStoreDelegates() {
         trackerStore.delegate = self
@@ -95,6 +107,8 @@ final class TrackerViewController: UIViewController {
     // MARK: - Actions
     @objc
     private func didTapAddButton() {
+        analyticsService.reportClick(screen: .main, item: .addTrack)
+        
         let newHabitVC = HabitViewController()
         let navController = UINavigationController(rootViewController: newHabitVC)
         newHabitVC.modalPresentationStyle = .formSheet
@@ -108,6 +122,8 @@ final class TrackerViewController: UIViewController {
     
     @objc
     private func didTapFilterButton() {
+        analyticsService.reportClick(screen: .main, item: .filter)
+        
         let filterVC = FilterViewController(selectedFilter: FilterType.from(currentFilter))
         filterVC.delegate = self
         let navController = UINavigationController(rootViewController: filterVC)
@@ -393,6 +409,8 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - TrackerCellDelegate
 extension TrackerViewController: TrackerCellDelegate {
     func trackerCellDidTapAction(_ cell: TrackerViewCell, trackerId: UUID) {
+        analyticsService.reportClick(screen: .main, item: .track)
+        
         do {
             let isCompletedToday = try recordStore.isRecordExists(trackerId: trackerId, date: selectedDate)
             
@@ -409,6 +427,8 @@ extension TrackerViewController: TrackerCellDelegate {
     }
     
     func trackerCellDidRequestEdit(_ cell: TrackerViewCell, trackerId: UUID) {
+        analyticsService.reportClick(screen: .main, item: .edit)
+        
         guard let tracker = trackerStore.allTrackers.first(where: { $0.id == trackerId }) else { return }
         let category = trackerStore.getCategory(for: trackerId)?.title ?? ""
         
