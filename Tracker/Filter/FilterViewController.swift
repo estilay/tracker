@@ -113,6 +113,8 @@ extension FilterViewController: UITableViewDelegate {
         tableView.reloadRows(at: rowsToReload, with: .none)
         
         delegate?.didSelectFilter(newFilter)
+        
+        dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
