@@ -1,7 +1,7 @@
 import UIKit
 
-final class NewHabitHeaderView: UICollectionReusableView {
-    static let identifier = "NewHabitHeaderView"
+final class HabitHeaderView: UICollectionReusableView {
+    static let identifier = "HabitHeaderView"
     var titleLabel = UILabel()
     
     override init(frame: CGRect) {

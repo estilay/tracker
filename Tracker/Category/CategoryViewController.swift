@@ -38,7 +38,7 @@ final class CategoryViewController: UIViewController {
     
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Добавить категорию", for: .normal)
+        button.setTitle(String(localized: "Добавить категорию"), for: .normal)
         button.setTitleColor(.yWhiteDay, for: .normal)
         button.backgroundColor = .yBlackDay
         button.layer.cornerRadius = 16
@@ -104,7 +104,7 @@ final class CategoryViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Категории"
+        title = String(localized: "Категории")
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor(resource: .yBlackDay),
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -123,7 +123,7 @@ extension CategoryViewController: UITableViewDataSource {
         let category = viewModel.category(at: indexPath)
         
         cell.textLabel?.text = category
-        cell.backgroundColor = .cellGrayBackground
+        cell.backgroundColor = .cellBackground
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
         

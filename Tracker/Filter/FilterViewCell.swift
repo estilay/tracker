@@ -1,8 +1,8 @@
 import UIKit
 
-// MARK: - CategoryViewCell
-final class CategoryViewCell: UITableViewCell {
-    static let identifier = "CategoryViewCell"
+// MARK: - FilterViewCell
+final class FilterViewCell: UITableViewCell {
+    static let identifier = "FilterViewCell"
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -24,6 +24,7 @@ final class CategoryViewCell: UITableViewCell {
         return imageView
     }()
     
+    // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -34,11 +35,12 @@ final class CategoryViewCell: UITableViewCell {
         nil
     }
     
+    // MARK: - UI Methods
     private func setupUI() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(checkmarkImageView)
         
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         layer.cornerRadius = 16
         layer.masksToBounds = true
         
@@ -53,6 +55,7 @@ final class CategoryViewCell: UITableViewCell {
         ])
     }
     
+    // MARK: - Public Methods
     func configure(with title: String) {
         titleLabel.text = title
     }
@@ -61,3 +64,4 @@ final class CategoryViewCell: UITableViewCell {
         checkmarkImageView.isHidden = !isChecked
     }
 }
+

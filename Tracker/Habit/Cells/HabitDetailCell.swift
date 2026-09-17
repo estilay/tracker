@@ -16,7 +16,7 @@ final class HabitDetailCell: UITableViewCell {
     }
     
     private func setupUI() {
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         
         layer.cornerRadius = 16
         layer.masksToBounds = true

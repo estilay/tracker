@@ -1,24 +1,22 @@
 import UIKit
 
-// MARK: - ColorCollectionCell
-final class ColorCollectionCell: UITableViewCell {
-    static let identifier = "ColorCollectionCell"
+// MARK: - EmojiCollectionCell
+final class EmojiCollectionCell: UITableViewCell {
+    static let identifier = "EmojiCollectionCell"
     
-    var onColorSelected: ((UIColor) -> Void)?
-    
-    private var colors: [UIColor] = [
-        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5, .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10, .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15, .colorSelection16, .colorSelection17, .colorSelection18
-    ]
+    var onEmojiSelected: ((String) -> Void)?
+    private var selectedEmoji: String?
+    private let emojies: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 0, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 24, right: 0)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(ColorViewCell.self, forCellWithReuseIdentifier: ColorViewCell.identifier)
-        collectionView.register(NewHabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewHabitHeaderView.identifier)
+        collectionView.register(EmojiViewCell.self, forCellWithReuseIdentifier: EmojiViewCell.identifier)
+        collectionView.register(HabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HabitHeaderView.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.allowsMultipleSelection = false
@@ -39,8 +37,14 @@ final class ColorCollectionCell: UITableViewCell {
         nil
     }
     
+    func setSelectedEmoji(_ emoji: String?) {
+        selectedEmoji = emoji
+        collectionView.reloadData()
+    }
+    
     private func setupUI() {
         contentView.addSubview(collectionView)
+        backgroundColor = .clear
         contentView.backgroundColor = .clear
         
         NSLayoutConstraint.activate([
@@ -53,45 +57,45 @@ final class ColorCollectionCell: UITableViewCell {
 }
 
 // MARK: - UICollectionViewDataSource
-extension ColorCollectionCell: UICollectionViewDataSource {
+extension EmojiCollectionCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return colors.count
+        return emojies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorViewCell.identifier, for: indexPath) as? ColorViewCell else { return UICollectionViewCell() }
-        cell.colorRectangleView.backgroundColor = colors[indexPath.row]
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiViewCell.identifier, for: indexPath) as? EmojiViewCell else { return UICollectionViewCell() }
+        
+        let emoji = emojies[indexPath.row]
+        cell.emojiView.text = emoji
+        
+        let isSelected = emoji == selectedEmoji
+        cell.emojiView.backgroundColor = isSelected ? .yLightGray : .clear
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader else { return UICollectionReusableView() }
         
-        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: NewHabitHeaderView.identifier, for: indexPath) as? NewHabitHeaderView else { return UICollectionReusableView() }
+        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitHeaderView.identifier, for: indexPath) as? HabitHeaderView else { return UICollectionReusableView() }
         
-        header.titleLabel.text = "Цвет"
+        header.titleLabel.text = String(localized: "Emoji")
         header.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         return header
     }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension ColorCollectionCell: UICollectionViewDelegateFlowLayout {
+extension EmojiCollectionCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width / 6, height: 52)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? ColorViewCell
-        cell?.pickedColorView.layer.borderWidth = 3
-        cell?.pickedColorView.layer.borderColor = colors[indexPath.row].withAlphaComponent(0.3).cgColor
-        onColorSelected?(colors[indexPath.row])
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as? ColorViewCell
-        cell?.pickedColorView.layer.borderWidth = 0
-        cell?.pickedColorView.layer.borderColor = UIColor.clear.cgColor
+        let emoji = emojies[indexPath.row]
+        selectedEmoji = emoji
+        collectionView.reloadData()
+        onEmojiSelected?(emoji)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

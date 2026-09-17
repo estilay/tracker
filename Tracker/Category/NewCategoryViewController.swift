@@ -23,7 +23,7 @@ final class NewCategoryViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(String(localized: "Готово"), for: .normal)
         button.setTitleColor(.yWhiteDay, for: .normal)
         button.backgroundColor = .yGray
         button.layer.cornerRadius = 16
@@ -81,7 +81,7 @@ final class NewCategoryViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Новая категория"
+        title = String(localized: "Новая категория")
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor(resource: .yBlackDay),
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)

@@ -24,7 +24,7 @@ final class TrackerStore: NSObject {
     
     weak var delegate: TrackerStoreDelegate?
     
-    // MARK: - Initialization
+    // MARK: - Init
     override convenience init() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
         self.init(context: context)

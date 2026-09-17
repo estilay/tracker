@@ -36,7 +36,7 @@ final class ScheduleViewCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(switchControl)
         
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         layer.cornerRadius = 16
         layer.masksToBounds = true
         

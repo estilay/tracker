@@ -2,6 +2,8 @@ import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
     func trackerCellDidTapAction(_ cell: TrackerViewCell, trackerId: UUID)
+    func trackerCellDidRequestEdit(_ cell: TrackerViewCell, trackerId: UUID)
+    func trackerCellDidRequestDelete(_ cell: TrackerViewCell, trackerId: UUID)
 }
 
 final class TrackerViewCell: UICollectionViewCell {
@@ -13,7 +15,7 @@ final class TrackerViewCell: UICollectionViewCell {
     private var trackerColor: UIColor?
     private var dayCount: Int = 0 {
         didSet {
-            valueLabel.text = "\(dayCount) день"
+            valueLabel.text = dayCount.localizedDays
         }
     }
     
@@ -63,7 +65,6 @@ final class TrackerViewCell: UICollectionViewCell {
         label.textAlignment = .left
         label.textColor = .yBlackDay
         label.backgroundColor = .clear
-        label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -80,7 +81,7 @@ final class TrackerViewCell: UICollectionViewCell {
         return button
     }()
     
-    // MARK: - Initialization
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -142,6 +143,7 @@ final class TrackerViewCell: UICollectionViewCell {
         contentView.addSubview(actionButton)
         
         setupConstraints()
+        setupContextMenu()
     }
     
     private func setupConstraints() {
@@ -173,5 +175,47 @@ final class TrackerViewCell: UICollectionViewCell {
             actionButton.heightAnchor.constraint(equalToConstant: 42)
         ])
     }
+    
+    // MARK: - Context Menu
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cardView.addInteraction(interaction)
+        cardView.isUserInteractionEnabled = true
+    }
 }
 
+// MARK: - UIContextMenuInteractionDelegate
+extension TrackerViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        guard let trackerId else { return nil }
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self else { return nil }
+            
+            let editAction = UIAction(
+                title: String(localized: "Редактировать")
+            ) { _ in
+                self.delegate?.trackerCellDidRequestEdit(self, trackerId: trackerId)
+            }
+            
+            let deleteAction = UIAction(
+                title: String(localized: "Удалить"),
+                attributes: .destructive
+            ) { _ in
+                self.delegate?.trackerCellDidRequestDelete(self, trackerId: trackerId)
+            }
+            
+            return UIMenu(children: [editAction, deleteAction])
+        }
+    }
+    
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
+        UITargetedPreview(view: cardView)
+    }
+}

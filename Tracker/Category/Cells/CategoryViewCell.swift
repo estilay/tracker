@@ -38,7 +38,7 @@ final class CategoryViewCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(checkmarkImageView)
         
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         layer.cornerRadius = 16
         layer.masksToBounds = true
         
