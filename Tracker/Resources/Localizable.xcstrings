@@ -73,6 +73,12 @@
             "state" : "translated",
             "value" : "Emoji"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emoji"
+          }
         }
       }
     },
@@ -84,6 +90,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter category name"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите название категории"
           }
         }
       }
@@ -97,6 +109,12 @@
             "state" : "translated",
             "value" : "Enter tracker name"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите название трекера"
+          }
         }
       }
     },
@@ -108,6 +126,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sunday"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Воскресенье"
           }
         }
       }
@@ -121,6 +145,12 @@
             "state" : "translated",
             "value" : "Sun"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вс"
+          }
         }
       }
     },
@@ -132,6 +162,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "All trackers"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все трекеры"
           }
         }
       }
@@ -145,6 +181,12 @@
             "state" : "translated",
             "value" : "Tue"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вт"
+          }
         }
       }
     },
@@ -156,6 +198,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tuesday"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вторник"
           }
         }
       }
@@ -169,6 +217,12 @@
             "state" : "translated",
             "value" : "Done"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
+          }
         }
       }
     },
@@ -180,6 +234,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add category"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить категорию"
           }
         }
       }
@@ -193,6 +253,12 @@
             "state" : "translated",
             "value" : "Completed"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завершенные"
+          }
         }
       }
     },
@@ -204,6 +270,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Every day"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каждый день"
           }
         }
       }
@@ -217,6 +289,12 @@
             "state" : "translated",
             "value" : "Categories"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Категории"
+          }
         }
       }
     },
@@ -228,6 +306,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Category"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Категория"
           }
         }
       }
@@ -241,6 +325,12 @@
             "state" : "translated",
             "value" : "Not completed"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не завершенные"
+          }
         }
       }
     },
@@ -252,6 +342,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing Found"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не найдено"
           }
         }
       }
@@ -265,6 +361,12 @@
             "state" : "translated",
             "value" : "New category"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая категория"
+          }
         }
       }
     },
@@ -276,6 +378,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "New habit"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая привычка"
           }
         }
       }
@@ -289,6 +397,12 @@
             "state" : "translated",
             "value" : "38 character limit"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ограничение 38 символов"
+          }
         }
       }
     },
@@ -300,6 +414,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменить"
           }
         }
       }
@@ -313,6 +433,12 @@
             "state" : "translated",
             "value" : "Mon"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пн"
+          }
         }
       }
     },
@@ -324,6 +450,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск"
           }
         }
       }
@@ -337,6 +469,12 @@
             "state" : "translated",
             "value" : "Monday"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Понедельник"
+          }
         }
       }
     },
@@ -348,6 +486,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fri"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пт"
           }
         }
       }
@@ -361,6 +505,12 @@
             "state" : "translated",
             "value" : "Friday"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пятница"
+          }
         }
       }
     },
@@ -372,6 +522,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schedule"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Расписание"
           }
         }
       }
@@ -385,6 +541,12 @@
             "state" : "translated",
             "value" : "Edit habit"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактирование привычки"
+          }
         }
       }
     },
@@ -396,6 +558,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать"
           }
         }
       }
@@ -409,6 +577,12 @@
             "state" : "translated",
             "value" : "Sat"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сб"
+          }
         }
       }
     },
@@ -420,6 +594,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Create"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать"
           }
         }
       }
@@ -433,6 +613,12 @@
             "state" : "translated",
             "value" : "Save"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить"
+          }
         }
       }
     },
@@ -444,6 +630,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wed"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ср"
           }
         }
       }
@@ -457,6 +649,12 @@
             "state" : "translated",
             "value" : "Wednesday"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Среда"
+          }
         }
       }
     },
@@ -468,6 +666,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Statistics"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статистика"
           }
         }
       }
@@ -481,6 +685,12 @@
             "state" : "translated",
             "value" : "Saturday"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Суббота"
+          }
         }
       }
     },
@@ -492,6 +702,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracker"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трекер"
           }
         }
       }
@@ -505,6 +721,12 @@
             "state" : "translated",
             "value" : "Trackers"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трекеры"
+          }
         }
       }
     },
@@ -516,6 +738,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trackers for today"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трекеры на сегодня"
           }
         }
       }
@@ -529,6 +757,12 @@
             "state" : "translated",
             "value" : "Are you sure you want to delete the tracker?"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уверены что хотите удалить трекер?"
+          }
         }
       }
     },
@@ -540,6 +774,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить"
           }
         }
       }
@@ -553,6 +793,12 @@
             "state" : "translated",
             "value" : "Filters"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фильтры"
+          }
         }
       }
     },
@@ -564,6 +810,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Color"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цвет"
           }
         }
       }
@@ -577,6 +829,12 @@
             "state" : "translated",
             "value" : "Thursday"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Четверг"
+          }
         }
       }
     },
@@ -589,6 +847,12 @@
             "state" : "translated",
             "value" : "Thu"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чт"
+          }
         }
       }
     },
@@ -600,6 +864,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "What will we track?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Что будем отслеживать?"
           }
         }
       }
