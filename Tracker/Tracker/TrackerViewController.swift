@@ -416,8 +416,10 @@ extension TrackerViewController: TrackerCellDelegate {
             
             if isCompletedToday {
                 try recordStore.deleteRecord(for: trackerId)
+                StatisticsService.shared.decrementCompletedTrackers()
             } else {
                 try recordStore.addRecord(trackerId: trackerId, date: selectedDate)
+                StatisticsService.shared.incrementCompletedTrackers()
             }
             
             applyFilters()
