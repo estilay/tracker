@@ -1,25 +1,21 @@
 import UIKit
 
-// MARK: - ColorCollectionCell
-final class ColorCollectionCell: UITableViewCell {
-    static let identifier = "ColorCollectionCell"
+// MARK: - EmojiCollectionCell
+final class EmojiCollectionCell: UITableViewCell {
+    static let identifier = "EmojiCollectionCell"
     
-    var onColorSelected: ((UIColor) -> Void)?
-    
-    private var selectedColor: UIColor?
-    
-    private var colors: [UIColor] = [
-        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5, .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10, .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15, .colorSelection16, .colorSelection17, .colorSelection18
-    ]
+    var onEmojiSelected: ((String) -> Void)?
+    private var selectedEmoji: String?
+    private let emojies: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 0, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 24, left: 0, bottom: 24, right: 0)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(ColorViewCell.self, forCellWithReuseIdentifier: ColorViewCell.identifier)
+        collectionView.register(EmojiViewCell.self, forCellWithReuseIdentifier: EmojiViewCell.identifier)
         collectionView.register(HabitHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HabitHeaderView.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -41,8 +37,8 @@ final class ColorCollectionCell: UITableViewCell {
         nil
     }
     
-    func setSelectedColor(_ color: UIColor?) {
-        selectedColor = color
+    func setSelectedEmoji(_ emoji: String?) {
+        selectedEmoji = emoji
         collectionView.reloadData()
     }
     
@@ -57,33 +53,22 @@ final class ColorCollectionCell: UITableViewCell {
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
         ])
     }
-    
-    // MARK: - Color Comparison
-    private func isSameColor(_ lhs: UIColor, _ rhs: UIColor) -> Bool {
-        guard let lhsComponents = lhs.cgColor.components,
-              let rhsComponents = rhs.cgColor.components,
-              lhsComponents.count == rhsComponents.count else {
-            return false
-        }
-        return zip(lhsComponents, rhsComponents).allSatisfy { abs($0 - $1) < 0.001 }
-    }
 }
 
 // MARK: - UICollectionViewDataSource
-extension ColorCollectionCell: UICollectionViewDataSource {
+extension EmojiCollectionCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return colors.count
+        return emojies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorViewCell.identifier, for: indexPath) as? ColorViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiViewCell.identifier, for: indexPath) as? EmojiViewCell else { return UICollectionViewCell() }
         
-        let color = colors[indexPath.row]
-        cell.colorRectangleView.backgroundColor = color
+        let emoji = emojies[indexPath.row]
+        cell.emojiView.text = emoji
         
-        let isSelected = selectedColor.map { isSameColor($0, color) } ?? false
-        cell.pickedColorView.layer.borderWidth = isSelected ? 3 : 0
-        cell.pickedColorView.layer.borderColor = isSelected ? color.withAlphaComponent(0.3).cgColor : UIColor.clear.cgColor
+        let isSelected = emoji == selectedEmoji
+        cell.emojiView.backgroundColor = isSelected ? .yLightGray : .clear
         
         return cell
     }
@@ -93,23 +78,23 @@ extension ColorCollectionCell: UICollectionViewDataSource {
         
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HabitHeaderView.identifier, for: indexPath) as? HabitHeaderView else { return UICollectionReusableView() }
         
-        header.titleLabel.text = "Цвет"
+        header.titleLabel.text = String(localized: "Emoji")
         header.titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         return header
     }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension ColorCollectionCell: UICollectionViewDelegateFlowLayout {
+extension EmojiCollectionCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width / 6, height: 52)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let color = colors[indexPath.row]
-        selectedColor = color
+        let emoji = emojies[indexPath.row]
+        selectedEmoji = emoji
         collectionView.reloadData()
-        onColorSelected?(color)
+        onEmojiSelected?(emoji)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {

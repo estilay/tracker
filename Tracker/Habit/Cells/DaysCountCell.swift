@@ -28,12 +28,7 @@ final class DaysCountCell: UITableViewCell {
     
     // MARK: - Configuration
     func configure(with daysCount: Int) {
-        daysLabel.text = makeText(for: daysCount)
-    }
-    
-    // MARK: - Private Methods
-    private func makeText(for daysCount: Int) -> String {
-        "\(daysCount) день"
+        daysLabel.text = daysCount.localizedDays
     }
     
     // MARK: - UI Setup

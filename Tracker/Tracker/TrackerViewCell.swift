@@ -15,7 +15,7 @@ final class TrackerViewCell: UICollectionViewCell {
     private var trackerColor: UIColor?
     private var dayCount: Int = 0 {
         didSet {
-            valueLabel.text = "\(dayCount) день"
+            valueLabel.text = dayCount.localizedDays
         }
     }
     
@@ -65,7 +65,6 @@ final class TrackerViewCell: UICollectionViewCell {
         label.textAlignment = .left
         label.textColor = .yBlackDay
         label.backgroundColor = .clear
-        label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -197,13 +196,13 @@ extension TrackerViewCell: UIContextMenuInteractionDelegate {
             guard let self else { return nil }
             
             let editAction = UIAction(
-                title: "Редактировать"
+                title: String(localized: "Редактировать")
             ) { _ in
                 self.delegate?.trackerCellDidRequestEdit(self, trackerId: trackerId)
             }
             
             let deleteAction = UIAction(
-                title: "Удалить",
+                title: String(localized: "Удалить"),
                 attributes: .destructive
             ) { _ in
                 self.delegate?.trackerCellDidRequestDelete(self, trackerId: trackerId)

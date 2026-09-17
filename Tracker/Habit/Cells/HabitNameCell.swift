@@ -14,7 +14,7 @@ final class HabitNameCell: UITableViewCell {
     // MARK: - UI Elements
     lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = String(localized: "Введите название трекера")
         textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.textColor = .yBlackDay
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)

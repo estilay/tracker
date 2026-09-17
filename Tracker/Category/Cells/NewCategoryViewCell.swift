@@ -11,7 +11,7 @@ final class NewCategoryViewCell: UITableViewCell {
     
     lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = String(localized: "Введите название категории")
         textField.font = .systemFont(ofSize: 17, weight: .regular)
         textField.textColor = .yBlackDay
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)

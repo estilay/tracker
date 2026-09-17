@@ -75,7 +75,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var createButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(String(localized: "Создать"), for: .normal)
         button.setTitleColor(.yWhiteDay, for: .normal)
         button.backgroundColor = .yGray
         button.layer.cornerRadius = 16
@@ -90,7 +90,7 @@ final class HabitViewController: UIViewController {
     
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(String(localized: "Отменить"), for: .normal)
         button.setTitleColor(.yRed, for: .normal)
         button.tintColor = .yRed
         button.layer.borderWidth = 1
@@ -117,12 +117,12 @@ final class HabitViewController: UIViewController {
     private func applyMode() {
         switch mode {
         case .create:
-            title = "Новая привычка"
-            createButton.setTitle("Создать", for: .normal)
+            title = String(localized: "Новая привычка")
+            createButton.setTitle(String(localized: "Создать"), for: .normal)
             
         case .edit(let tracker, let category):
-            title = "Редактирование привычки"
-            createButton.setTitle("Сохранить", for: .normal)
+            title = String(localized: "Редактирование привычки")
+            createButton.setTitle(String(localized: "Сохранить"), for: .normal)
             
             habitName = tracker.name
             selectedIcon = tracker.icon
@@ -139,7 +139,7 @@ final class HabitViewController: UIViewController {
     
     private func scheduleText(from days: [Schedule]) -> String {
         if days.count == 7 {
-            return "Каждый день"
+            return String(localized: "Каждый день")
         } else if days.isEmpty {
             return ""
         } else {
@@ -309,10 +309,10 @@ extension HabitViewController: UITableViewDataSource {
             }
             switch indexPath.row {
             case 0:
-                cell.configure(title: "Категория", value: selectedCategory ?? "")
+                cell.configure(title: String(localized: "Категория"), value: selectedCategory ?? "")
                 cell.selectionStyle = .none
             case 1:
-                cell.configure(title: "Расписание", value: selectedSchedule)
+                cell.configure(title: String(localized: "Расписание"), value: selectedSchedule)
             default:
                 break
             }
@@ -417,7 +417,7 @@ extension HabitViewController: UITableViewDelegate {
         footerView.backgroundColor = .clear
         
         let errorLabel = UILabel()
-        errorLabel.text = "Ограничение 38 символов"
+        errorLabel.text = String(localized: "Ограничение 38 символов")
         errorLabel.textColor = .yRed
         errorLabel.font = .systemFont(ofSize: 17, weight: .regular)
         errorLabel.numberOfLines = 1

@@ -18,13 +18,13 @@ final class TabBarController: UITabBarController {
         let statNav = UINavigationController(rootViewController: statViewController)
         
         trackerNav.tabBarItem = UITabBarItem(
-            title: "Трекер",
+            title: String(localized: "Трекер"),
             image: UIImage(resource: .recordCircleFill),
             selectedImage: nil
         )
         
         statNav.tabBarItem = UITabBarItem(
-            title: "Статистика",
+            title: String(localized: "Статистика"),
             image: UIImage(resource: .hareFill),
             selectedImage: nil
         )

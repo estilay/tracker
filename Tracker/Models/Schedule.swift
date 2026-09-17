@@ -9,15 +9,27 @@ enum Schedule: String, CaseIterable {
     case saturday = "Суббота"
     case sunday = "Воскресенье"
     
+    var full: String {
+        switch self {
+        case .monday:    return String(localized: "Понедельник")
+        case .tuesday:   return String(localized: "Вторник")
+        case .wednesday: return String(localized: "Среда")
+        case .thursday:  return String(localized: "Четверг")
+        case .friday:    return String(localized: "Пятница")
+        case .saturday:  return String(localized: "Суббота")
+        case .sunday:    return String(localized: "Воскресенье")
+        }
+    }
+    
     var short: String {
         switch self {
-        case .monday: return "Пн"
-        case .tuesday: return "Вт"
-        case .wednesday: return "Ср"
-        case .thursday: return "Чт"
-        case .friday: return "Пт"
-        case .saturday: return "Сб"
-        case .sunday: return "Вс"
+        case .monday:    return String(localized: "Пн")
+        case .tuesday:   return String(localized: "Вт")
+        case .wednesday: return String(localized: "Ср")
+        case .thursday:  return String(localized: "Чт")
+        case .friday:    return String(localized: "Пт")
+        case .saturday:  return String(localized: "Сб")
+        case .sunday:    return String(localized: "Вс")
         }
     }
     

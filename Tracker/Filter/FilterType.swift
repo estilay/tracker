@@ -8,10 +8,10 @@ enum FilterType: Int, CaseIterable {
     
     var title: String {
         switch self {
-        case .all:          return "Все трекеры"
-        case .today:        return "Трекеры на сегодня"
-        case .completed:    return "Завершенные"
-        case .notCompleted: return "Не завершенные"
+        case .all:          return String(localized: "Все трекеры")
+        case .today:        return String(localized: "Трекеры на сегодня")
+        case .completed:    return String(localized: "Завершенные")
+        case .notCompleted: return String(localized: "Не завершенные")
         }
     }
     

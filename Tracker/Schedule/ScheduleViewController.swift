@@ -26,7 +26,7 @@ final class ScheduleViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(String(localized: "Готово"), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.titleLabel?.tintColor = .yWhiteDay
         button.backgroundColor = .yBlackDay
@@ -80,7 +80,7 @@ final class ScheduleViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Расписание"
+        title = String(localized: "Расписание")
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor(resource: .yBlackDay),
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -97,7 +97,7 @@ final class ScheduleViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: doneButton.topAnchor)
         ])
     }
 }
@@ -114,7 +114,7 @@ extension ScheduleViewController: UITableViewDataSource {
         }
         
         let item = items[indexPath.row]
-        cell.configure(title: item.day.rawValue, isOn: item.isOn)
+        cell.configure(title: item.day.full, isOn: item.isOn)
         
         cell.switchControl.tag = indexPath.row
         cell.switchControl.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)

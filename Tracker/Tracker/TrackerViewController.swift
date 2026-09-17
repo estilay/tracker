@@ -34,7 +34,7 @@ final class TrackerViewController: UIViewController {
     private lazy var stubLabel: UILabel = {
         let stubLabel = UILabel()
         stubLabel.textColor = .yBlackDay
-        stubLabel.text = "Что будем отслеживать?"
+        stubLabel.text = String(localized: "Что будем отслеживать?")
         stubLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         stubLabel.translatesAutoresizingMaskIntoConstraints = false
         return stubLabel
@@ -61,7 +61,7 @@ final class TrackerViewController: UIViewController {
         let button = UIButton()
         button.layer.cornerRadius = 16
         button.backgroundColor = .yBlue
-        button.setTitle("Фильтры", for: .normal)
+        button.setTitle(String(localized: "Фильтры"), for: .normal)
         button.setTitleColor(.yWhiteDay, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         button.addTarget(self, action: #selector(didTapFilterButton), for: .touchUpInside)
@@ -71,7 +71,7 @@ final class TrackerViewController: UIViewController {
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = String(localized: "Поиск")
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController
@@ -232,20 +232,20 @@ final class TrackerViewController: UIViewController {
         
         if !searchText.isEmpty {
             stubImageView.image = UIImage(resource: .notFound)
-            stubLabel.text = "Ничего не найдено"
+            stubLabel.text = String(localized: "Ничего не найдено")
             return
         }
         
         switch currentFilter {
         case .none:
             stubImageView.image = UIImage(resource: .dizzy)
-            stubLabel.text = "Что будем отслеживать?"
+            stubLabel.text = String(localized: "Что будем отслеживать?")
         case .completed:
             stubImageView.image = UIImage(resource: .notFound)
-            stubLabel.text = "Ничего не найдено"
+            stubLabel.text = String(localized: "Ничего не найдено")
         case .notCompleted:
             stubImageView.image = UIImage(resource: .notFound)
-            stubLabel.text = "Ничего не найдено"
+            stubLabel.text = String(localized: "Ничего не найдено")
         }
     }
     
@@ -279,7 +279,7 @@ extension TrackerViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Трекеры"
+        title = String(localized: "Трекеры")
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.largeTitleTextAttributes = [
@@ -423,16 +423,16 @@ extension TrackerViewController: TrackerCellDelegate {
     
     func trackerCellDidRequestDelete(_ cell: TrackerViewCell, trackerId: UUID) {
         let alert = UIAlertController(
-            title: "Уверены что хотите удалить трекер?",
+            title: String(localized: "Уверены что хотите удалить трекер?"),
             message: nil,
             preferredStyle: .actionSheet
         )
         
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+        let deleteAction = UIAlertAction(title: String(localized: "Удалить"), style: .destructive) { [weak self] _ in
             self?.deleteTracker(with: trackerId)
         }
         
-        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
+        let cancelAction = UIAlertAction(title: String(localized: "Отменить"), style: .cancel)
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
