@@ -422,7 +422,22 @@ extension TrackerViewController: TrackerCellDelegate {
     }
     
     func trackerCellDidRequestDelete(_ cell: TrackerViewCell, trackerId: UUID) {
-        deleteTracker(with: trackerId)
+        let alert = UIAlertController(
+            title: "Уверены что хотите удалить трекер?",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            self?.deleteTracker(with: trackerId)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
     }
 }
 
