@@ -77,7 +77,7 @@ extension FilterViewController: UITableViewDataSource {
         let filter = filters[indexPath.row]
         
         cell.textLabel?.text = filter.title
-        cell.backgroundColor = .cellGrayBackground
+        cell.backgroundColor = .cellBackground
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
         cell.selectionStyle = .none

@@ -39,7 +39,7 @@ final class NewCategoryViewCell: UITableViewCell {
     
     // MARK: - UI Methods
     private func setupUI() {
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         
         layer.cornerRadius = 16
         layer.masksToBounds = true

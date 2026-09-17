@@ -44,6 +44,7 @@ final class EmojiCollectionCell: UITableViewCell {
     
     private func setupUI() {
         contentView.addSubview(collectionView)
+        backgroundColor = .clear
         contentView.backgroundColor = .clear
         
         NSLayoutConstraint.activate([

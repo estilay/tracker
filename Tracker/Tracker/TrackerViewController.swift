@@ -262,6 +262,7 @@ final class TrackerViewController: UIViewController {
 extension TrackerViewController {
     private func setupUI() {
         view.backgroundColor = .yWhiteDay
+        collectionView.backgroundColor = .clear
         setupNavigationBar()
         setupCollectionView()
         setupStubContainerViewConstraints()

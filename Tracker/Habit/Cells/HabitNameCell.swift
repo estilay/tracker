@@ -52,7 +52,7 @@ final class HabitNameCell: UITableViewCell {
     
     // MARK: - UI Setup
     private func setupUI() {
-        backgroundColor = .cellGrayBackground
+        backgroundColor = .cellBackground
         
         layer.cornerRadius = 16
         layer.masksToBounds = true

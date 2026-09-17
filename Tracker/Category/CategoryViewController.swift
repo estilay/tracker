@@ -123,7 +123,7 @@ extension CategoryViewController: UITableViewDataSource {
         let category = viewModel.category(at: indexPath)
         
         cell.textLabel?.text = category
-        cell.backgroundColor = .cellGrayBackground
+        cell.backgroundColor = .cellBackground
         cell.layer.cornerRadius = 16
         cell.layer.masksToBounds = true
         

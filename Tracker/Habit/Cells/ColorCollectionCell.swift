@@ -49,6 +49,7 @@ final class ColorCollectionCell: UITableViewCell {
     private func setupUI() {
         contentView.addSubview(collectionView)
         contentView.backgroundColor = .clear
+        backgroundColor = .clear
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
