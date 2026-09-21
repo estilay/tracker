@@ -3,7 +3,14 @@ import AppMetricaCore
 
 struct AnalyticsService {
     static func activate() {
-        guard let configuration = AppMetricaConfiguration(apiKey: "1936ad1d-0588-4fee-a116-976d3fecbec3") else { return }
+        guard
+            let apiKey = Bundle.main.object(forInfoDictionaryKey: "AppMetricaAPIKey") as? String,
+            !apiKey.isEmpty,
+            let configuration = AppMetricaConfiguration(apiKey: apiKey)
+        else {
+            assertionFailure("AppMetricaAPIKey not found in Info.plist")
+            return
+        }
         configuration.handleFirstActivationAsUpdate = true
         AppMetrica.activate(with: configuration)
     }

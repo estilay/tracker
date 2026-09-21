@@ -24,5 +24,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>AppMetricaAPIKey</key>
+	<string>$(APP_METRICA_API_KEY)</string>
 </dict>
 </plist>

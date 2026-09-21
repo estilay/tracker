@@ -36,17 +36,29 @@
 		B8047135301B8215006D60FD /* Exceptions for "Tracker" folder in "Tracker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Application/Info.plist,
+				Resources/Config.xcconfig.example,
 			);
 			target = B8047122301B8214006D60FD /* Tracker */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		B8F3355630619B66002A96AE /* Exceptions for "Tracker" folder in "Compile Sources" phase from "Tracker" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = B804711F301B8214006D60FD /* Sources */;
+			membershipExceptions = (
+				Resources/Config.xcconfig.example,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B8047125301B8214006D60FD /* Tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B8047135301B8215006D60FD /* Exceptions for "Tracker" folder in "Tracker" target */,
+				B8F3355630619B66002A96AE /* Exceptions for "Tracker" folder in "Compile Sources" phase from "Tracker" target */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -319,6 +331,8 @@
 		};
 		B8047139301B8215006D60FD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = B8047125301B8214006D60FD /* Tracker */;
+			baseConfigurationReferenceRelativePath = Resources/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -384,6 +398,8 @@
 		};
 		B804713A301B8215006D60FD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = B8047125301B8214006D60FD /* Tracker */;
+			baseConfigurationReferenceRelativePath = Resources/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

@@ -3,14 +3,14 @@ import SnapshotTesting
 
 @testable import Tracker
 
-final class TrackerTests: XCTestCase {
-    func testTabBarContollerLight() {
+final class TrackerSnapshotTests: XCTestCase {
+    func testTabBarControllerLight() {
         let vc = TabBarController()
         
         assertSnapshot(of: vc, as: .image(traits: .init(userInterfaceStyle: .light)))
     }
     
-    func testTabBarContollerDark() {
+    func testTabBarControllerDark() {
         let vc = TabBarController()
         
         assertSnapshot(of: vc, as: .image(traits: .init(userInterfaceStyle: .dark)))

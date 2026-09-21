@@ -7,7 +7,7 @@ final class FilterStorage {
     private let userDefaults: UserDefaults
     private let key = "tracker.currentFilter"
     
-    init(userDefaults: UserDefaults = .standard) {
+    private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
     }
     

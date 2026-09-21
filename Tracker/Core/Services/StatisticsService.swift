@@ -16,7 +16,7 @@ final class StatisticsService {
     
     private let userDefaults: UserDefaults
     
-    init(userDefaults: UserDefaults = .standard) {
+    private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
     }
     

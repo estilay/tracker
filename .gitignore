@@ -101,4 +101,5 @@ iOSInjectionProject/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # Secrets
+Config.xcconfig
 *.secret.swift
